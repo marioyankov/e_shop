@@ -12,7 +12,6 @@ router.register(r'profiles', UserProfileViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('signup/', SignUpUserView.as_view(), name='sign up user'),
     path('profile/', user_profile, name='user profile'),
     path('profile/<int:pk>/', user_profile, name='user profile'),

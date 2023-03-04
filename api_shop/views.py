@@ -3,7 +3,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.models import User, Group
 from django.views import View
 
-from rest_framework import viewsets, permissions
+from rest_framework import views as rest_views, status, viewsets, permissions
+from rest_framework.response import Response
 from .serializers import UserSerializer, GroupSerializer, UserProfileSerializer
 from .forms import SignUpForm, UserProfileForm
 from .models import UserProfile
@@ -24,23 +25,22 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
-# Django class based views
-class SignUpUserView(View):
-    template_name = 'sign_up.html'
+class SignUpUserView(rest_views.APIView):
+    # template_name = 'sign_up.html'
 
     def get(self, request):
-        form = SignUpForm()
-        context = {
-            'form': form,
+        users = User.objects.all()
+        serializer_context = {
+            'request': request
         }
-        return render(request, self.template_name, context)
+        serializer = UserSerializer(users, many=True, context=serializer_context)
+        return Response(serializer.data)
     
     def post(self, request):
-        form = SignUpForm(request.POST)
+        serializer = UserSerializer(data=request.data)
 
-        if form.is_valid():
-            user = form.save()
+        if serializer.is_valid():
+            user = serializer.save()
             profile = UserProfile(
                 user=user,
             )
@@ -48,15 +48,14 @@ class SignUpUserView(View):
             profile.save()
 
             login(request, user)
-            return redirect('index')
-        
-        context = {
-            'form': form,
-        }
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return render(request, self.template_name, context)
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-
+# Django views
 def user_profile(request, pk=None):
     user = request.user if pk is None else User.objects.get(pk=pk)
     if request.method == 'GET':
