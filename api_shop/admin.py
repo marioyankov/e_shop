@@ -1,8 +1,15 @@
 from django.contrib import admin
-from .models import UserProfile
-
-class ViewUser(admin.ModelAdmin):
-    list_display = ('id', 'user')
+from .models import Category, Product
 
 
-admin.site.register(UserProfile, ViewUser)
+class CategoryViewAdmin(admin.ModelAdmin):
+    list_display = ('name')
+    prepopulated_fields = {"slug": ("name",)}
+
+class ProductViewAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user')
+    prepopulated_fields = {"slug": ("name",)}
+
+
+admin.site.register(Category, CategoryViewAdmin)
+admin.site.register(Product, ProductViewAdmin)

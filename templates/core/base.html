@@ -4,11 +4,20 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django rest api view</title>
+    <title>{% block title %}Home{% endblock %} | e-shop</title>
 </head>
 <body>
-    {% content block %}
+    {% block navbar %}
+        {% include 'core/navbar.html' %}
+    {% endblock %}
+
+    {% block content %}
         <h1>Django rest API</h1>
+        
+        {% for product in products %}
+            {{ product.name }}
+        {% endfor %}
     {% endblock content %}
+
 </body>
 </html>
