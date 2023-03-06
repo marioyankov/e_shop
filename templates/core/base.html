@@ -15,7 +15,10 @@
         <h1>Django rest API</h1>
         
         {% for product in products %}
-            {{ product.name }}
+            <a href="{% url 'product_detail' product.slug %}">
+                <h2>{{ product.name }}</h2>
+                <p>{{ product.get_display_price }}</p>
+            </a>
         {% endfor %}
     {% endblock content %}
 
